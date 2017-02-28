@@ -155,7 +155,7 @@ function radialSource(x, y) {
     this.reset = function() {
         this.rayList = [];
         for (var i = 0; i < 360; i += 18)
-            this.rayList.push(new lightRay(this.x, this.y, i * Math.PI / 180));\
+            this.rayList.push(new lightRay(this.x, this.y, i * Math.PI / 180));
     }
     this.reset();
     this.update = function() {
