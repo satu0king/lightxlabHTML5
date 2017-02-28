@@ -1,0 +1,23 @@
+.button{
+
+  background-color: #111;
+  text-align: center;
+  color:white;
+  height:auto;
+  width:150px;
+  text-decoration: none;
+  padding: 5px 10px;
+
+    border: none;
+    text-align: center;
+    display: inline-block;
+    font-size: 12px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+#simulationArea{
+  background-color: #111;
+}
+.button:hover{
+  background-color: #666;
+}
