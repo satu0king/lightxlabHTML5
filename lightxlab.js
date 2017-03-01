@@ -71,6 +71,7 @@ var uiArea = {
             uiArea.mouseDown = true;
         });
         window.addEventListener('touchstart', function(e) {
+          alert("touch!");
             var rect = uiArea.canvas.getBoundingClientRect();
             uiArea.mouseDownX = e.touches[0].screenX- rect.left;
             uiArea.mouseDownY = e.touches[0].screenY- rect.right;
