@@ -1,7 +1,8 @@
-var width = 540;
-var height = 400;
 
 function setup() {
+
+    width = window.innerWidth;
+    height = window.innerHeight;
     mirrorList = [];
     sphericalMirrorList = [];
     radialSourceList = [];
@@ -16,8 +17,9 @@ function setup() {
 function addMirror() {
     mirrorList.push(new mirror(Math.random() * width * .6 + width * .1, Math.random() * height * .8 + height * .1, 200, 0));
 }
+
 function addSphericalMirror() {
-    sphericalMirrorList.push(new sphericalMirror(Math.random() * width * .6 + width * .2, Math.random() * height * .6 + height * .2,75));
+    sphericalMirrorList.push(new sphericalMirror(Math.random() * width * .6 + width * .2, Math.random() * height * .6 + height * .2, 75));
 }
 
 function addLightBeam() {
@@ -145,24 +147,24 @@ function lightRay(x, y, angle) {
             var closestDistance = 100000;
             var newAngle = this.angle;
 
-            var solns=[];
+            var solns = [];
 
             for (var i = 0; i < mirrorList.length; i++) {
                 soln = solveMirrorEqn(this, mirrorList[i]);
-                if (soln != null)solns.push(soln)
+                if (soln != null) solns.push(soln)
             }
             for (var i = 0; i < sphericalMirrorList.length; i++) {
                 soln = solveSphericalMirrorEqn(this, sphericalMirrorList[i]);
-                if (soln != null)solns.push(soln)
+                if (soln != null) solns.push(soln)
             }
 
-            for(var i=0;i<solns.length;i++){
-              if (solns[i]["distance"] < closestDistance) {
-                  xx = solns[i]["x"];
-                  yy = solns[i]["y"];
-                  newAngle = solns[i]["angle"];
-                  closestDistance = solns[i]["distance"];
-              }
+            for (var i = 0; i < solns.length; i++) {
+                if (solns[i]["distance"] < closestDistance) {
+                    xx = solns[i]["x"];
+                    yy = solns[i]["y"];
+                    newAngle = solns[i]["angle"];
+                    closestDistance = solns[i]["distance"];
+                }
             }
 
             ctx = simulationArea.context;
@@ -454,7 +456,7 @@ function mirror(x, y, width, angle) {
 
 }
 
-function sphericalMirror(x, y,radius) {
+function sphericalMirror(x, y, radius) {
 
     this.color = "yellow";
     this.p1Button = new Button(x, y - radius, 4, "rgba(255,0,0,1)", "rgba(255,255,0,1)");
@@ -511,6 +513,7 @@ function sphericalMirror(x, y,radius) {
         this.cas = cas;
         var ctx = uiArea.context;
         ctx.beginPath();
+        ctx.lineWidth=3;
         ctx.strokeStyle = this.color;
         // //console.log(t2+":"+t1+":"+t3);
         if (cas == 1) ctx.arc(p, q, r, t1, t3);

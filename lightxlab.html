@@ -1,7 +1,7 @@
 <html>
 <body onload="setup()">
 <link rel="stylesheet" href="./lightxlab.css">
-<div class="toolbar">
+<div class="toolbar" id="toolbar">
   <button class="button" id="addMirrorButton">Mirror</a>
   <button class="button" id="addSphericalMirrorButton">Spherical Mirror</a>
   <button class="button" id="addRadialSourceButton">Radial Source</a>
@@ -12,9 +12,7 @@
 <div class="lightxlab" style="position: relative;">
  <canvas id="simulationArea"
    style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
- <canvas id="simulationArea2"
-   style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
- <canvas id="uiArea"
+ <canvas id="uiArea" 
    style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
 </div>
 </body>
