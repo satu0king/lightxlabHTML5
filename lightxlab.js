@@ -1,19 +1,21 @@
-
+mirrorList = [];
+sphericalMirrorList = [];
+radialSourceList = [];
+lightBeamList = [];
+lightRayList = [];
 function setup() {
 
     width = window.innerWidth;
     height = window.innerHeight;
     console.log(width+":"+height);
-    mirrorList = [];
-    sphericalMirrorList = [];
-    radialSourceList = [];
-    lightBeamList = [];
-    lightRayList = [];
-    // sm = new sphericalMirror(200, 200,75);
+    simulationArea.reset=true;
     uiArea.setup();
     simulationArea.setup();
-
+    console.log("setup");
 }
+
+window.onresize = setup;
+ window.addEventListener('orientationchange', setup);
 
 function addMirror() {
     mirrorList.push(new mirror(Math.random() * width * .6 + width * .1, Math.random() * height * .8 + height * .1, 200, 0));
@@ -72,11 +74,12 @@ var uiArea = {
             uiArea.mouseDown = true;
         });
         window.addEventListener('touchstart', function(e) {
-          console.log("touched");
             var rect = uiArea.canvas.getBoundingClientRect();
 
             uiArea.mouseDownX = e.touches[0].clientX-rect.left;
             uiArea.mouseDownY = e.touches[0].clientY-rect.top;
+            uiArea.mouseX = e.touches[0].clientX- rect.left;
+            uiArea.mouseY = e.touches[0].clientY- rect.top;
             console.log(uiArea.mouseDownX+":"+uiArea.mouseDownY);
             uiArea.mouseDown = true;
         });
@@ -599,7 +602,7 @@ function Button(x, y, radius, color1, color2) {
         return false;
     }
     this.isClicked = function() {
-        if (Math.pow(this.x - uiArea.mouseDownX, 2) + Math.pow(this.y - uiArea.mouseDownY, 2) < Math.pow(this.radius * 2, 2)) {
+        if (Math.pow(this.x - uiArea.mouseDownX, 2) + Math.pow(this.y - uiArea.mouseDownY, 2) < Math.pow(this.radius * 3, 2)) {
             return true;
         }
         return false;
