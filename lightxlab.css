@@ -53,7 +53,9 @@ canvas{
   /*font-family: Arial, Helvetica, sans-serif ;*/
   /*font-size: 1.1em ;*/
   width: fit-content ;
+
   margin: auto;
+/*margin-top:15px;*/
   text-align: center;
   /*padding: 10px ;*/
   /*background-color: white ;*/

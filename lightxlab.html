@@ -1,19 +1,27 @@
 <html>
 <body onload="setup()">
 <link rel="stylesheet" href="./lightxlab.css">
-<div class="toolbar" id="toolbar">
-  <button class="button" id="addMirrorButton">Mirror</a>
-  <button class="button" id="addSphericalMirrorButton">Spherical Mirror</a>
-  <button class="button" id="addRadialSourceButton">Radial Source</a>
-  <button class="button" id="addLightBeamButton">Light Beam</a>
-  <button class="button" id="addLightRayButton">Light Ray</a>
 
-</div>
 <div class="lightxlab" style="position: relative;">
+
  <canvas id="simulationArea"
    style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
- <canvas id="uiArea" 
+ <canvas id="uiArea"
    style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+ <div style="position: relative; left: 0; top: 10; z-index: 2;">
+   <div style="position: relative;">
+     <div class="toolbar" id="toolbar"  >
+        <button class="button" id="addMirrorButton">Mirror</a>
+        <button class="button" id="addSphericalMirrorButton">Spherical Mirror</a>
+        <button class="button" id="addRadialSourceButton">Radial Source</a>
+        <button class="button" id="addLightBeamButton">Light Beam</a>
+        <button class="button" id="addLightRayButton">Light Ray</a>
+     </div>
+   </div>
+
+ </div>
+
+
 </div>
 </body>
 <script src="./lightxlab.js"></script>
