@@ -3,6 +3,7 @@ function setup() {
 
     width = window.innerWidth;
     height = window.innerHeight;
+    console.log(width+":"+height);
     mirrorList = [];
     sphericalMirrorList = [];
     radialSourceList = [];
@@ -71,22 +72,20 @@ var uiArea = {
             uiArea.mouseDown = true;
         });
         window.addEventListener('touchstart', function(e) {
-          alert("touch!");
+          console.log("touched");
             var rect = uiArea.canvas.getBoundingClientRect();
-            uiArea.mouseDownX = e.touches[0].screenX- rect.left;
-            uiArea.mouseDownY = e.touches[0].screenY- rect.right;
+
+            uiArea.mouseDownX = e.touches[0].clientX-rect.left;
+            uiArea.mouseDownY = e.touches[0].clientY-rect.top;
+            console.log(uiArea.mouseDownX+":"+uiArea.mouseDownY);
             uiArea.mouseDown = true;
         });
         window.addEventListener('touchend', function(e) {
             var rect = uiArea.canvas.getBoundingClientRect();
-            uiArea.mouseDownX = e.touches[0].screenX- rect.left;
-            uiArea.mouseDownY = e.touches[0].screenY- rect.right;
             uiArea.mouseDown = false;
         });
         window.addEventListener('touchleave', function(e) {
             var rect = uiArea.canvas.getBoundingClientRect();
-            uiArea.mouseDownX = e.touches[0].screenX- rect.left;
-            uiArea.mouseDownY = e.touches[0].screenY- rect.right;
             uiArea.mouseDown = false;
         });
         window.addEventListener('mouseup', function(e) {
@@ -97,8 +96,8 @@ var uiArea = {
         });
         window.addEventListener('touchmove', function (e) {
            var rect = uiArea.canvas.getBoundingClientRect();
-            uiArea.mouseX = e.touches[0].screenX- rect.left;
-            uiArea.mouseY = e.touches[0].screenY- rect.right;
+            uiArea.mouseX = e.touches[0].clientX- rect.left;
+            uiArea.mouseY = e.touches[0].clientY- rect.top;
         })
     },
     clear: function() {
