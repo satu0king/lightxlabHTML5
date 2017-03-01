@@ -54,6 +54,7 @@ function TANangle(x1, y1, x2, y2) {
 var uiArea = {
     canvas: document.getElementById("uiArea"),
     selected: false,
+
     setup: function() {
         this.canvas.width = width;
         this.canvas.height = height;
@@ -69,12 +70,35 @@ var uiArea = {
             uiArea.mouseDownY = e.clientY - rect.top;
             uiArea.mouseDown = true;
         });
+        window.addEventListener('touchstart', function(e) {
+            var rect = uiArea.canvas.getBoundingClientRect();
+            uiArea.mouseDownX = e.touches[0].screenX- rect.left;
+            uiArea.mouseDownY = e.touches[0].screenY- rect.right;
+            uiArea.mouseDown = true;
+        });
+        window.addEventListener('touchend', function(e) {
+            var rect = uiArea.canvas.getBoundingClientRect();
+            uiArea.mouseDownX = e.touches[0].screenX- rect.left;
+            uiArea.mouseDownY = e.touches[0].screenY- rect.right;
+            uiArea.mouseDown = false;
+        });
+        window.addEventListener('touchleave', function(e) {
+            var rect = uiArea.canvas.getBoundingClientRect();
+            uiArea.mouseDownX = e.touches[0].screenX- rect.left;
+            uiArea.mouseDownY = e.touches[0].screenY- rect.right;
+            uiArea.mouseDown = false;
+        });
         window.addEventListener('mouseup', function(e) {
             var rect = uiArea.canvas.getBoundingClientRect();
             uiArea.mouseDownX = e.clientX - rect.left;
             uiArea.mouseDownY = e.clientY - rect.top;
             uiArea.mouseDown = false;
         });
+        window.addEventListener('touchmove', function (e) {
+           var rect = uiArea.canvas.getBoundingClientRect();
+            uiArea.mouseX = e.touches[0].screenX- rect.left;
+            uiArea.mouseY = e.touches[0].screenY- rect.right;
+        })
     },
     clear: function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
