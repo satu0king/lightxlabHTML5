@@ -1,36 +1,131 @@
-mirrorList = [];
-sphericalMirrorList = [];
-radialSourceList = [];
-lightBeamList = [];
-lightRayList = [];
+data={};
+scale=1.5;
 function setup() {
 
-    width = window.innerWidth;
-    height = window.innerHeight;
-    console.log(width+":"+height);
+  if (parent.location.hash.length > 1) {
+    try {
+      var http = new XMLHttpRequest();
+      hash = parent.location.hash.substr(1);
+      // alert(hash);
+      http.open("POST", "./index.php", true);
+      http.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      var params = "retrieve=" + hash; // probably use document.getElementById(...).value
+      http.send(params);
+      http.onload = function() {
+        console.log(http.responseText);
+          if(http.responseText=="ERROR")alert("Error: could not load ");
+          else {data=JSON.parse(http.responseText);
+          console.log(data);
+          load();}
+
+      }
+    } catch (err) {
+      alert("Error: could not load board", "red", 2000);
+    }
+  }
+
+  mirrorList = [];
+  sphericalMirrorList = [];
+  radialSourceList = [];
+  lightBeamList = [];
+  lightRayList = [];
+  width = window.innerWidth*scale;
+  height = window.innerHeight*scale;
+  // console.log(width+":"+height);
+  simulationArea.reset=true;
+  uiArea.setup();
+  simulationArea.setup();
+  exportArea.setup();
+
+}
+function load(){
+  if(typeof(data)=="undefined")return;
+  if(typeof(data["mirrorList"])!="undefined")
+  for (var i=0;i<data["mirrorList"].length;i++){
+    var m=data["mirrorList"][i];
+    mirrorList.push(new mirror(m["x"],m["y"],m["width"],m["angle"]));
+    console.log(m);
+  }
+  if(typeof(data["radialSourceList"])!="undefined")
+  for (var i=0;i<data["radialSourceList"].length;i++){
+    var m=data["radialSourceList"][i];
+    radialSourceList.push(new radialSource(m["x"],m["y"]));
+    console.log(m);
+  }
+  if(typeof(data["lightBeamList"])!="undefined")
+  for (var i=0;i<data["lightBeamList"].length;i++){
+    var m=data["lightBeamList"][i];
+    lightBeamList.push(new lightBeam(m["x"],m["y"],m["width"],m["angle"]));
+    console.log(m);
+  }
+  if(typeof(data["lightRayList"])!="undefined")
+  for (var i=0;i<data["lightRayList"].length;i++){
+    var m=data["lightRayList"][i];
+    lightRayList.push(new lightRaySource(m["x"],m["y"],m["width"],m["angle"]));
+    console.log(m);
+  }
+  if(typeof(data["sphericalMirrorList"])!="undefined")
+  for (var i=0;i<data["sphericalMirrorList"].length;i++){
+    var m=data["sphericalMirrorList"][i];
+    sphericalMirrorList.push(new sphericalMirror(m["x"],m["y"],m["radius"],m["t1"],m["t2"],m["t3"]));
+    console.log(m);
+  }
+}
+function resetup() {
+
+    width = window.innerWidth*scale;
+    height = window.innerHeight*scale;
     simulationArea.reset=true;
     uiArea.setup();
     simulationArea.setup();
-    console.log("setup");
+    exportArea.setup();
 }
 
-window.onresize = setup;
- window.addEventListener('orientationchange', setup);
+function extract(obj){
+  return obj.save();
+}
+
+// submitForm();
+function save(){
+  var data={};
+
+  data["mirrorList"]=mirrorList.map(extract);
+  data["sphericalMirrorList"]=sphericalMirrorList.map(extract);
+  data["lightRayList"]=lightRayList.map(extract);
+  data["radialSourceList"]=radialSourceList.map(extract);
+  data["lightBeamList"]=lightBeamList.map(extract);
+  data=JSON.stringify(data)
+  console.log(data);
+
+  var http = new XMLHttpRequest();
+  http.open("POST", "./index.php", true);
+  http.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  var params = "data=" + data; // probably use document.getElementById(...).value
+  http.send(params);
+
+  http.onload = function() {
+    parent.location.hash = http.responseText;
+  }
+
+}
+
+window.onresize = resetup;
+window.addEventListener('orientationchange', resetup);
 
 function addMirror() {
-    mirrorList.push(new mirror(Math.random() * width * .6 + width * .1, Math.random() * height * .8 + height * .1, 200, 0));
+    mirrorList.push(new mirror(Math.random() * width * .6 + width * .1, Math.random() * height * .8 + height * .1, 200*scale, 0));
 }
 
 function addSphericalMirror() {
-    sphericalMirrorList.push(new sphericalMirror(Math.random() * width * .6 + width * .2, Math.random() * height * .6 + height * .2, 75));
+    sphericalMirrorList.push(new sphericalMirror(Math.random() * width * .6 + width * .2, Math.random() * height * .6 + height * .2, 75*scale));
 }
 
 function addLightBeam() {
-    lightBeamList.push(new lightBeam(Math.random() * width * .6 + width * .1, Math.random() * height * .3 + height * .6, 150, -Math.PI / 2));
+    lightBeamList.push(new lightBeam(Math.random() * width * .6 + width * .1, Math.random() * height * .3 + height * .6, 150*scale, -Math.PI / 2));
 }
 
 function addLightRay() {
-    lightRayList.push(new lightRaySource(Math.random() * width * .6 + width * .1, Math.random() * height * .3 + height * .6, 150, -Math.PI / 2));
+    lightRayList.push(new lightRaySource(Math.random() * width * .6 + width * .1, Math.random() * height * .3 + height * .6, 150*scale, -Math.PI / 2));
 }
 
 function addRadialSource() {
@@ -64,22 +159,22 @@ var uiArea = {
         this.context = this.canvas.getContext("2d");
         window.addEventListener('mousemove', function(e) {
             var rect = uiArea.canvas.getBoundingClientRect();
-            uiArea.mouseX = e.clientX - rect.left;
-            uiArea.mouseY = e.clientY - rect.top;
+            uiArea.mouseX = (e.clientX - rect.left)*scale;
+            uiArea.mouseY = (e.clientY - rect.top)*scale;
         });
         window.addEventListener('mousedown', function(e) {
             var rect = uiArea.canvas.getBoundingClientRect();
-            uiArea.mouseDownX = e.clientX - rect.left;
-            uiArea.mouseDownY = e.clientY - rect.top;
+            uiArea.mouseDownX = (e.clientX - rect.left)*scale;
+            uiArea.mouseDownY = (e.clientY - rect.top)*scale;
             uiArea.mouseDown = true;
         });
         window.addEventListener('touchstart', function(e) {
             var rect = uiArea.canvas.getBoundingClientRect();
 
-            uiArea.mouseDownX = e.touches[0].clientX-rect.left;
-            uiArea.mouseDownY = e.touches[0].clientY-rect.top;
-            uiArea.mouseX = e.touches[0].clientX- rect.left;
-            uiArea.mouseY = e.touches[0].clientY- rect.top;
+            uiArea.mouseDownX = (e.touches[0].clientX-rect.left)*scale;
+            uiArea.mouseDownY = (e.touches[0].clientY-rect.top)*scale;
+            uiArea.mouseX = (e.touches[0].clientX- rect.left)*scale;
+            uiArea.mouseY = (e.touches[0].clientY- rect.top)*scale;
             console.log(uiArea.mouseDownX+":"+uiArea.mouseDownY);
             uiArea.mouseDown = true;
         });
@@ -93,14 +188,14 @@ var uiArea = {
         });
         window.addEventListener('mouseup', function(e) {
             var rect = uiArea.canvas.getBoundingClientRect();
-            uiArea.mouseDownX = e.clientX - rect.left;
-            uiArea.mouseDownY = e.clientY - rect.top;
+            uiArea.mouseDownX = (e.clientX - rect.left)*scale;
+            uiArea.mouseDownY = (e.clientY - rect.top)*scale;
             uiArea.mouseDown = false;
         });
         window.addEventListener('touchmove', function (e) {
            var rect = uiArea.canvas.getBoundingClientRect();
-            uiArea.mouseX = e.touches[0].clientX- rect.left;
-            uiArea.mouseY = e.touches[0].clientY- rect.top;
+            uiArea.mouseX = (e.touches[0].clientX- rect.left)*scale;
+            uiArea.mouseY = (e.touches[0].clientY- rect.top)*scale;
         })
     },
     clear: function() {
@@ -111,6 +206,24 @@ var uiArea = {
 var simulationArea = {
     canvas: document.getElementById("simulationArea"),
     reset: false,
+    reflectionFrequency:1,
+    setup: function() {
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.updated = false;
+        this.context = this.canvas.getContext("2d");
+        this.interval = setInterval(update, 20);
+
+    },
+    clear: function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+
+var exportArea = {
+    canvas: document.getElementById("exportArea"),
+    reset: false,
+    export:false,
     setup: function() {
         this.canvas.width = width;
         this.canvas.height = height;
@@ -146,6 +259,7 @@ function update() {
 }
 
 function lightRay(x, y, angle) {
+
     this.x = x;
     this.y = y;
     this.originalX = x;
@@ -164,11 +278,12 @@ function lightRay(x, y, angle) {
     this.update = function() {
         if (simulationArea.reset) {
             this.reset();
-            // return;
         }
         if (this.simulationOver) return;
 
-        for (var i = 0; i < 1; i++) {
+        var freq=simulationArea.reflectionFrequency;
+        if(simulationArea.reset&&!exportArea.export)freq=1;
+        for (var i = 0; i < freq &&!this.simulationOver; i++) {
             var xx = this.x + 100000 * Math.cos(this.angle);
             var yy = this.y + 100000 * Math.sin(this.angle);
             var closestDistance = 100000;
@@ -196,6 +311,7 @@ function lightRay(x, y, angle) {
 
             ctx = simulationArea.context;
             ctx.strokeStyle = ("rgba(255,255,0,1)");
+            ctx.lineWidth=1*scale;
             ctx.beginPath();
             ctx.moveTo(this.x, this.y);
             ctx.lineTo(xx, yy);
@@ -215,7 +331,10 @@ function radialSource(x, y) {
     this.x = x;
     this.y = y;
     this.rayList = [];
-    this.sourceButton = new Button(x, y, 5, "rgba(0,0,0,0)", "rgba(255,255,0,1)");
+    this.sourceButton = new Button(x, y, 5*scale, "rgba(0,0,0,0)", "rgba(255,255,0,1)");
+    this.save=function(){
+      return{x:this.x,y:this.y};
+    }
     this.reset = function() {
         this.rayList = [];
         for (var i = 0; i < 360; i += 18)
@@ -250,9 +369,11 @@ function lightBeam(x, y, width, angle) {
     this.height = 5;
     this.angle = angle;
     this.color = "green";
-    this.leftButton = new Button(x, y, 5, "rgba(0,0,0,0)", "rgba(255,255,0,1)");
-    this.rightButton = new Button(x + width * Math.cos(angle), y + width * Math.sin(angle), 5, "rgba(0,0,0,0)", "rgba(255,255,0,1)");
-
+    this.leftButton = new Button(x, y, 5*scale, "rgba(0,0,0,0)", "rgba(255,255,0,1)");
+    this.rightButton = new Button(x + width * Math.cos(angle), y + width * Math.sin(angle), 5*scale, "rgba(0,0,0,0)", "rgba(255,255,0,1)");
+    this.save=function(){
+      return {"x":this.x,"y":this.y,width:this.width,angle:this.angle};
+    }
     this.reset = function() {
         this.rayList = [];
         for (var i = 0; i < this.width; i += 10)
@@ -277,7 +398,7 @@ function lightBeam(x, y, width, angle) {
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
         ctx.fillStyle = this.color;
-        ctx.fillRect(0, -this.height / 2, this.width, this.height);
+        ctx.fillRect(0, -this.height / 2, this.width, this.height*scale);
         ctx.restore();
         this.leftButton.update();
         this.rightButton.update();
@@ -298,11 +419,12 @@ function lightRaySource(x, y, width, angle) {
     this.y = y;
     this.ray;
     this.width = width;
-    this.height = 5;
     this.angle = angle;
-    this.leftButton = new Button(x, y, 7, "rgba(200,0,0,1)", "rgba(55,0,0,1)");
-    this.rightButton = new Button(x + width * Math.cos(angle), y + width * Math.sin(angle), 7, "rgba(120,0,0,1)", "rgba(220,0,0,1)");
-
+    this.leftButton = new Button(x, y, 7*scale, "rgba(200,0,0,1)", "rgba(55,0,0,1)");
+    this.rightButton = new Button(x + width * Math.cos(angle), y + width * Math.sin(angle), 7*scale, "rgba(120,0,0,1)", "rgba(220,0,0,1)");
+    this.save=function(){
+      return {"x":this.x,"y":this.y,width:this.width,angle:this.angle};
+    }
     this.reset = function() {
         this.ray = new lightRay(this.x, this.y, this.angle);
     }
@@ -448,10 +570,13 @@ function mirror(x, y, width, angle) {
     this.height = 5;
     this.angle = angle - .001;
     this.color = "yellow";
-    this.leftButton = new Button(x, y, 7, "rgba(0,0,0,0)", "rgba(255,255,0,1)");
-    this.rightButton = new Button(x + width * Math.cos(angle), y + width * Math.sin(angle), 7, "rgba(0,0,0,0)", "rgba(255,255,0,1)");
+    this.leftButton = new Button(x, y, 7*scale, "rgba(0,0,0,0)", "rgba(255,255,0,1)");
+    this.rightButton = new Button(x + width * Math.cos(angle), y + width * Math.sin(angle), 7*scale, "rgba(0,0,0,0)", "rgba(255,255,0,1)");
     this.updated = false;
 
+    this.save=function(){
+      return {"x":this.x,"y":this.y,width:this.width,angle:this.angle};
+    }
     this.update = function() {
         this.updated &= !this.leftButton.updatePosition();
         this.updated &= !this.rightButton.updatePosition();
@@ -468,7 +593,7 @@ function mirror(x, y, width, angle) {
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
         ctx.fillStyle = this.color;
-        ctx.fillRect(0, -this.height / 2, this.width, this.height);
+        ctx.fillRect(0, -this.height / 2, this.width, this.height*scale);
         ctx.restore();
         this.leftButton.update();
         this.rightButton.update();
@@ -483,21 +608,24 @@ function mirror(x, y, width, angle) {
 
 }
 
-function sphericalMirror(x, y, radius) {
+function sphericalMirror(x, y, radius,t1=3*Math.PI/2,t2=Math.PI/2,t3=0) {
 
     this.color = "yellow";
-    this.p1Button = new Button(x, y - radius, 4, "rgba(255,0,0,1)", "rgba(255,255,0,1)");
-    this.p2Button = new Button(x, y + radius, 4, "rgba(255,0,0,1)", "rgba(255,255,0,1)");
-    this.p3Button = new Button(x + radius, y, 4, "rgba(255,0,0,1)", "rgba(255,255,0,1)");
+    this.p1Button = new Button(x+ radius*Math.cos(t1), y + radius*Math.sin(t1), 4*scale, "rgba(255,0,0,1)", "rgba(255,255,0,1)");
+    this.p2Button = new Button(x+ radius*Math.cos(t2), y + radius*Math.sin(t2), 4*scale, "rgba(255,0,0,1)", "rgba(255,255,0,1)");
+    this.p3Button = new Button(x + radius*Math.cos(t3), y+ radius*Math.sin(t3), 4*scale, "rgba(255,0,0,1)", "rgba(255,255,0,1)");
     this.radius = radius;
     this.x = x;
     this.y = y;
     this.cas = 0;
     this.updated = false;
-    this.t1 = Math.PI / 2;
-    this.t2 = 0;
-    this.t3 = 3 * Math.PI / 2;
+    this.t1 = t1;
+    this.t2 = t2;
+    this.t3 = t3;
 
+    this.save=function(){
+      return {x:this.x,y:this.y,radius:this.radius,t1:this.t1,t2:this.t3,t3:this.t2};
+    }
     this.update = function() {
         this.updated &= !this.p1Button.updatePosition();
         this.updated &= !this.p2Button.updatePosition();
@@ -540,7 +668,7 @@ function sphericalMirror(x, y, radius) {
         this.cas = cas;
         var ctx = uiArea.context;
         ctx.beginPath();
-        ctx.lineWidth=3;
+        ctx.lineWidth=3*scale;
         ctx.strokeStyle = this.color;
         // //console.log(t2+":"+t1+":"+t3);
         if (cas == 1) ctx.arc(p, q, r, t1, t3);
@@ -624,3 +752,27 @@ document.getElementById("addSphericalMirrorButton").addEventListener("click", ad
 document.getElementById("addRadialSourceButton").addEventListener("click", addRadialSource);
 document.getElementById("addLightBeamButton").addEventListener("click", addLightBeam);
 document.getElementById("addLightRayButton").addEventListener("click", addLightRay);
+document.getElementById("saveButton").addEventListener("click", save);
+function download() {
+    simulationArea.reset=true;
+    exportArea.export=true;
+    simulationArea.context=exportArea.context;
+    uiArea.context=exportArea.context;
+    var temp=simulationArea.reflectionFrequency;
+    simulationArea.reflectionFrequency=10000000;
+    update();
+    exportArea.export=false;
+    simulationArea.reflectionFrequency=temp;
+    simulationArea.context=simulationArea.canvas.getContext("2d");
+    uiArea.context=uiArea.canvas.getContext("2d");
+    var dt = exportArea.canvas.toDataURL('image/jpeg');
+    console.log(dt);
+    var anchor = document.createElement('a');
+    anchor.href = dt;
+    anchor.target = '_blank';
+    anchor.download = "LightXlab.jpg";
+    anchor.click();
+    exportArea.clear();
+    // this.href = dt;
+};
+document.getElementById("exportButton").addEventListener('click', download, false);

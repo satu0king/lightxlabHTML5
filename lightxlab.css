@@ -13,21 +13,25 @@ body {
 }
 
 .button{
+  -webkit-user-select: none; /* Chrome/Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+ */
+
+  /* Rules below not implemented in browsers yet */
+  -o-user-select: none;
+  user-select: none;
 
   background-color: #333;
-  text-align: center;
   color:white;
-  display: inline-block;
-
   height:auto;
   width:150px;
-
+  margin: 0px;
   text-decoration: none;
-  padding: 5px 10px;
-
-    border: 2px solid black;
+  padding: 5px 5px;
+  float: left;
+    border: 1px solid black;
     text-align: center;
-    display: inline-block;
+    display: inline;
     font-size: 12px;
     cursor: pointer;
     -webkit-transition-duration: 0.7s; /* Safari */
