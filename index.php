@@ -28,5 +28,5 @@ else if(isset($_POST["retrieve"])){
   exit();
 }
 else
-require("lightxlab.html");
+require("index.html");
 ?>
